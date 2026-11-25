@@ -703,7 +703,7 @@ function renderList() {
             <option value="e2c"${(r.direction || 'e2c') === 'e2c' ? ' selected' : ''}>英译中</option>
             <option value="c2e"${r.direction === 'c2e' ? ' selected' : ''}>中译英</option>
           </select>
-          <input type="text" class="recTag" data-tag-i="${i}" value="${escapeHtml(r.tag || '')}" placeholder="表现标签" maxlength="20" title="自定义表现标签">
+          <input type="text" class="recTag" data-tag-i="${i}" value="${escapeHtml(r.tag || '')}" placeholder="标签" maxlength="20" title="自定义标签">
         </div>
         <div class="recActions">
           <button class="revBtn" data-ru-i="${i}" title="关联 docx 复盘文档">📄 ${r.review ? '更换复盘' : '上传复盘'}</button>
