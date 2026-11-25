@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>口译练习打卡 · 便利贴版</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 28px 16px 60px;
+    font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    color: #4a3b12;
+    background-color: #fff8e1;
+    background-image:
+      radial-gradient(rgba(255,193,7,.18) 1px, transparent 1px),
+      radial-gradient(rgba(255,193,7,.12) 1px, transparent 1px);
+    background-size: 26px 26px, 26px 26px;
+    background-position: 0 0, 13px 13px;
+    transition: padding-right .28s ease;
+  }
+  body.side-open { padding-right: 336px; }
+
+  .wrap { max-width: 920px; margin: 0 auto; }
+
+  /* ===== Banner ===== */
+  .banner {
+    position: relative;
+    display: flex; align-items: center; justify-content: space-between; gap: 18px;
+    background: linear-gradient(120deg, #fff3b0 0%, #ffe082 100%);
+    border-radius: 14px;
+    padding: 24px 28px 22px;
+    margin-bottom: 26px;
+    box-shadow: 4px 6px 0 rgba(230,183,0,.35), 0 2px 6px rgba(0,0,0,.06);
+  }
+  .banner::before {
+    content: ""; position: absolute; top: -10px; left: 46%;
+    transform: translateX(-50%) rotate(-3deg);
+    width: 92px; height: 22px; background: rgba(255,213,79,.75);
+    border-left: 1px dashed rgba(255,255,255,.9);
+    border-right: 1px dashed rgba(255,255,255,.9);
+  }
+  .banner-content { flex: 1; min-width: 0; }
+  .banner h1 {
+    font-size: 25px; margin: 0 0 12px;
+    font-family: "Comic Sans MS", "PingFang SC", sans-serif;
+    display: inline-block; padding: 6px 16px; background: #fffde7;
+    border-radius: 6px; transform: rotate(-1.5deg);
+    box-shadow: 2px 3px 0 rgba(255,193,7,.6);
+  }
+  .banner-slogan {
+    display: inline-block;
+    font-size: clamp(22px, 4.4vw, 34px); font-weight: 800; line-height: 1.35;
+    color: #e65100; margin: 2px 0 12px;
+    transform: rotate(-1.2deg);
+    text-shadow: 2px 2px 0 #fffde7;
+  }
+  .banner-slogan .em { color: #d84315; border-bottom: 4px solid #ffca28; padding: 0 2px; }
+  .banner .sub { margin: 0; font-size: 13px; color: #8a7a4a; }
+  .banner-figure { flex: 0 0 200px; text-align: center; }
+  .banner-figure img {
+    width: 100%; max-width: 210px; height: auto; display: inline-block;
+    filter: drop-shadow(2px 5px 3px rgba(120,80,0,.18));
+  }
+
+  .sub { color: #8a7a4a; font-size: 13px; margin: 12px 0 22px; }
+
+  /* 便利贴卡片 */
+  .note {
+    position: relative; background: #fffde7; border-radius: 3px;
+    padding: 20px 22px; margin-bottom: 22px;
+    box-shadow: 3px 5px 0 rgba(230,200,110,.35), 0 1px 3px rgba(0,0,0,.06);
+  }
+  .note::before {
+    content: ""; position: absolute; top: -9px; left: 50%;
+    transform: translateX(-50%) rotate(-2deg);
+    width: 74px; height: 20px; background: rgba(255,213,79,.65);
+    border-left: 1px dashed rgba(255,255,255,.8);
+    border-right: 1px dashed rgba(255,255,255,.8);
+  }
+  .note:nth-child(odd) { transform: rotate(-.35deg); }
+  .note:nth-child(even) { transform: rotate(.35deg); }
+  .note h2 {
+    font-size: 15px; margin: 0 0 16px; color: #7a6410;
+    border-bottom: 2px dashed #ffe082; padding-bottom: 8px;
+  }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 14px; }
+  label { display: block; font-size: 13px; color: #8a7a4a; margin-bottom: 6px; }
+  input[type="number"], input[type="date"], input[type="text"] {
+    width: 100%; padding: 9px 11px; border: 2px solid #ffe082;
+    border-radius: 8px; font-size: 14px; outline: none; background: #fffef7; color: #4a3b12;
+  }
+  input:focus { border-color: #fbc02d; box-shadow: 0 0 0 3px rgba(255,224,130,.5); }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap: 14px; }
+  .stat { background: #fff9c4; border-radius: 6px; padding: 14px; text-align: center; box-shadow: inset 0 -3px 0 rgba(255,213,79,.5); }
+  .stat .num { font-size: 24px; font-weight: 700; color: #f57f17; }
+  .stat .lbl { font-size: 12px; color: #8a7a4a; margin-top: 4px; }
+
+  .bar-bg { height: 12px; background: #fff3c4; border-radius: 8px; overflow: hidden; margin-top: 16px; }
+  .bar-fill { height: 100%; width: 0; background: linear-gradient(90deg,#ffe082,#fbc02d,#f9a825); transition: width .5s; }
+
+  #drop { border: 2px dashed #f9a825; border-radius: 10px; padding: 30px; text-align: center; color: #8a7a4a; cursor: pointer; transition: .2s; background: #fffef7; }
+  #drop:hover, #drop.over { background: #fff8e1; border-color: #f57f17; color: #f57f17; }
+
+  /* ===== 两栏容器：热力图 + 录音记录 ===== */
+  .twoCol {
+    display: grid;
+    grid-template-columns: minmax(240px, 300px) 1fr;  /* 左固定窄栏，右自适应 */
+    gap: 20px;
+    align-items: stretch;                               /* 两栏等高 */
+  }
+  .colHeat { min-width: 0; }
+  .colList {
+    min-width: 0; display: flex; flex-direction: column;
+    border-left: 2px dashed #ffe082; padding-left: 20px;
+  }
+  /* 标题栏与左栏对齐 */
+  .colTitle { font-size: 14px; font-weight: 700; color: #7a6410; margin-bottom: 12px; }
+
+  /* 右侧列表滚动区：设置最大高度，超出滚动 */
+  .listScroll {
+    flex: 1;
+    max-height: 340px;      /* 与日历高度大致齐平；日历约 6 行 × 28px + 表头 */
+    overflow-y: auto;
+    padding-right: 6px;
+  }
+  .listScroll::-webkit-scrollbar { width: 8px; }
+  .listScroll::-webkit-scrollbar-track { background: #fff9c4; border-radius: 4px; }
+  .listScroll::-webkit-scrollbar-thumb { background: #ffd54f; border-radius: 4px; }
+  .listScroll::-webkit-scrollbar-thumb:hover { background: #fbc02d; }
+
+  /* 录音条目做成小卡片（比表格更适合窄栏） */
+  .recItem {
+    display: flex; align-items: center; gap: 8px;
+    background: #fffef7; border-radius: 7px; padding: 9px 10px; margin-bottom: 8px;
+    box-shadow: 1px 2px 0 rgba(230,200,110,.35);
+    font-size: 13px;
+  }
+  .recInfo { flex: 1; min-width: 0; }
+  .recName {
+    color: #4a3b12; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-bottom: 4px; font-weight: 600;
+  }
+  .recMeta { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px; }
+  .recMeta input[type="date"] {
+    padding: 3px 5px; border: 1px solid #ffe082; border-radius: 5px;
+    font-size: 11px; background: #fffef7; width: auto;
+  }
+  .recMeta select, .recMeta input.recTag {
+    padding: 3px 5px; border: 1px solid #ffe082; border-radius: 5px;
+    font-size: 11px; background: #fffef7; color: #8a7a4a; width: auto;
+  }
+  .recMeta input.recTag { width: 84px; }
+  .recMeta select { cursor: pointer; }
+  .recDur { font-size: 12px; font-weight: 700; color: #f57f17; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .recDel { color: #e65100; cursor: pointer; font-size: 14px; opacity: .7; flex-shrink: 0; }
+  .recDel:hover { opacity: 1; }
+  .emptyTip { color: #b5a76a; text-align: center; padding: 28px 0; font-size: 13px; }
+
+  .recActions { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  button.revBtn { padding: 3px 8px; font-size: 11px; border-radius: 6px; box-shadow: 1px 1px 0 rgba(230,183,0,.6); background: #fff9c4; color: #8a7a4a; }
+  button.revBtn.view { background: #fff3e0; color: #e65100; box-shadow: 1px 1px 0 rgba(230,183,0,.5); }
+  .revName { font-size: 10px; color: #8a7a4a; max-width: 96px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* 复盘预览弹窗 */
+  #reviewModal {
+    position: fixed; inset: 0; z-index: 50; display: none;
+    align-items: center; justify-content: center; padding: 18px;
+    background: rgba(74,59,18,.45);
+  }
+  #reviewModal.show { display: flex; }
+  .modalCard {
+    width: min(1080px, 100%); max-height: 92vh; display: flex; flex-direction: column;
+    background: #fffdf0; border: 3px solid #ffe082; border-radius: 14px;
+    box-shadow: 0 12px 40px rgba(0,0,0,.2);
+    transition: width .2s ease, max-height .2s ease;
+  }
+  .modalCard.zoomed { width: 98vw; max-height: 96vh; }
+  .modalHead { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 18px; border-bottom: 2px dashed #ffe082; }
+  .modalHead h3 { margin: 0; font-size: 15px; color: #7a6410; word-break: break-all; }
+  .modalTools { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .zoomBtn { padding: 5px 12px; font-size: 12px; box-shadow: 2px 2px 0 rgba(230,183,0,.6); }
+  .modalClose { cursor: pointer; font-size: 18px; color: #e65100; opacity: .8; }
+  .modalClose:hover { opacity: 1; }
+  .modalBody { overflow-y: auto; padding: 24px 34px; font-size: 16px; line-height: 1.75; color: #4a3b12; }
+  .modalCard.zoomed .modalBody { font-size: 18px; padding: 28px 42px; }
+  .modalBody h1, .modalBody h2, .modalBody h3 { color: #7a6410; }
+  .modalBody table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+  .modalBody td, .modalBody th { border: 1px solid #ffe082; padding: 6px 8px; }
+  .fReview { color: #e65100; cursor: pointer; font-size: 11px; }
+
+  /* ===== 日历式热力图（小格版）===== */
+  .heatHead { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .monthNav { display: flex; align-items: center; gap: 8px; }
+  .monthNav button {
+    width: 26px; height: 26px; padding: 0; font-size: 14px; line-height: 1;
+    border-radius: 7px; box-shadow: 2px 2px 0 rgba(230,183,0,.6);
+  }
+  .monthNav .mLabel { font-size: 13px; font-weight: 700; color: #7a6410; min-width: 100px; text-align: center; }
+
+  .calWrap { display: inline-block; }
+  .calWeekHead {
+    display: grid; grid-template-columns: repeat(7, 24px); gap: 4px;
+    margin-bottom: 5px; font-size: 11px; color: #a3915a; text-align: center;
+  }
+  .calWeekHead span.we { color: #e65100; }
+  .calGrid { display: grid; grid-template-columns: repeat(7, 24px); gap: 4px; }
+
+  .calCell {
+    width: 24px; height: 24px; border-radius: 5px;
+    background: #fdf8e3; cursor: default; transition: .15s;
+  }
+  .calCell.lv1 { background: #fff0b3; }
+  .calCell.lv2 { background: #ffe066; }
+  .calCell.lv3 { background: #ffc107; }
+  .calCell.lv4 { background: #f57f17; }
+  .calCell.blank { background: transparent; }
+  .calCell.today { outline: 2px solid #e65100; outline-offset: 1px; }
+  .calCell:hover:not(.blank) { transform: scale(1.15); }
+
+  .legend { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #8a7a4a; }
+  .legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 9px 8px; text-align: left; border-bottom: 1px dashed #ffe082; }
+  th { color: #8a7a4a; font-weight: 600; }
+  td.time, td.date { color: #8a7a4a; white-space: nowrap; }
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 12px; }
+  .done { background: #fff0b3; color: #f57f17; }
+  .doing { background: #ffe066; color: #795500; }
+  .todo  { background: #f5f5f5; color: #9e9e9e; }
+
+  button {
+    padding: 9px 18px; border: none; border-radius: 8px; font-size: 14px; cursor: pointer;
+    background: #ffc107; color: #4a3b12; font-weight: 600;
+    box-shadow: 2px 3px 0 rgba(230,183,0,.6);
+  }
+  button:hover { background: #ffb300; }
+  button.ghost { background: #fff9c4; color: #8a7a4a; box-shadow: 2px 3px 0 rgba(255,224,130,.7); }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+
+  /* ===== 侧拉栏 ===== */
+  #sideToggle {
+    position: fixed; top: 50%; right: 0; z-index: 30;
+    transform: translateY(-50%);
+    width: 32px; padding: 12px 3px; border-radius: 9px 0 0 9px;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    font-size: 17px; background: #ffc107;
+    box-shadow: -3px 3px 10px rgba(230,183,0,.45);
+    line-height: 1.1;
+  }
+  #sideToggle .tLabel { font-size: 11px; writing-mode: vertical-rl; letter-spacing: 3px; font-weight: 700; }
+  body.side-open #sideToggle { right: 316px; }
+
+  #sidebar {
+    position: fixed; top: 0; right: 0; z-index: 25;
+    width: 316px; height: 100vh; overflow-y: auto;
+    padding: 16px 18px 24px;
+    background: #fffdf0;
+    border-left: 3px solid #ffe082;
+    box-shadow: -6px 0 18px rgba(230,200,110,.25);
+    transform: translateX(110%);
+    transition: transform .28s ease;
+  }
+  body.side-open #sidebar { transform: translateX(0); }
+
+  .sideTabs { display: flex; gap: 6px; margin-bottom: 16px; border-bottom: 2px dashed #ffe082; padding-bottom: 8px; }
+  .sideTab {
+    flex: 1; padding: 8px 4px; font-size: 12px; border-radius: 7px;
+    background: #fff9c4; color: #8a7a4a; box-shadow: 2px 2px 0 rgba(255,224,130,.6);
+  }
+  .sideTab.active { background: #ffc107; color: #4a3b12; box-shadow: 2px 2px 0 rgba(230,183,0,.6); }
+  .tabPane { display: none; }
+  .tabPane.active { display: block; }
+
+  #sidebar h3 {
+    font-size: 14px; color: #7a6410; margin: 0 0 12px;
+    border-bottom: 2px dashed #ffe082; padding-bottom: 7px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  #sidebar h3 .hint { font-size: 11px; color: #b5a76a; font-weight: 400; }
+
+  /* 本周目标卡 */
+  .weekBar { background: #fff9c4; border-radius: 8px; padding: 12px 14px; margin-bottom: 20px; box-shadow: inset 0 -3px 0 rgba(255,213,79,.5); }
+  .weekBar .top { font-size: 13px; color: #8a7a4a; margin-bottom: 4px; }
+  .weekBar .big { font-size: 22px; font-weight: 700; color: #f57f17; }
+  .weekBar .compare { font-size: 12px; color: #8a6d1f; margin-top: 6px; }
+
+  .dayList { margin-top: 12px; }
+  .dayRow {
+    display: grid; grid-template-columns: 34px 1fr 52px 52px;
+    align-items: center; gap: 7px;
+    font-size: 12px; color: #8a7a4a; padding: 5px 0;
+    border-bottom: 1px dashed #fff0b3;
+  }
+  .dayRow:last-child { border-bottom: none; }
+  .dayRow .nm { white-space: nowrap; }
+  .dayRow .track { height: 8px; background: #fff3c4; border-radius: 5px; overflow: hidden; }
+  .dayRow .fill { height: 100%; background: linear-gradient(90deg,#ffe082,#fbc02d); }
+  .dayRow .fill.over { background: linear-gradient(90deg,#ffd54f,#f57f17); }
+  .dayRow .goal { text-align: right; color: #b5a76a; }
+  .dayRow .act { text-align: right; font-weight: 700; color: #f57f17; }
+  .dayRow .act.zero { color: #cfc39a; font-weight: 400; }
+  .dayRow.isToday { background: #fffde7; border-radius: 6px; }
+  .dayRow.isToday .nm { color: #f57f17; font-weight: 700; }
+  .dayColHead {
+    display: grid; grid-template-columns: 34px 1fr 52px 52px; gap: 7px;
+    font-size: 11px; color: #b5a76a; padding-bottom: 5px; margin-top: 12px;
+    border-bottom: 1px solid #ffe082;
+  }
+  .dayColHead span:nth-child(3), .dayColHead span:nth-child(4) { text-align: right; }
+
+  /* 待办 */
+  .todoInput { display: flex; gap: 8px; margin-bottom: 12px; }
+  .todoInput input { flex: 1; padding: 8px 10px; font-size: 13px; }
+  .todoInput button { padding: 8px 12px; font-size: 13px; box-shadow: 2px 2px 0 rgba(230,183,0,.6); }
+
+  #todoList { list-style: none; margin: 0; padding: 0; }
+  #todoList li {
+    display: flex; align-items: flex-start; gap: 8px;
+    background: #fffde7; border-radius: 6px; padding: 9px 10px; margin-bottom: 8px;
+    font-size: 13px; box-shadow: 1px 2px 0 rgba(230,200,110,.35); word-break: break-word;
+  }
+  #todoList li.checked { opacity: .55; }
+  #todoList li.checked .txt { text-decoration: line-through; }
+  #todoList input[type="checkbox"] { margin-top: 2px; accent-color: #fbc02d; cursor: pointer; }
+  #todoList .txt { flex: 1; }
+  #todoList .rm { color: #e65100; cursor: pointer; font-size: 13px; opacity: .7; }
+  #todoList .rm:hover { opacity: 1; }
+
+  /* 录音管理筛选 */
+  .filterBox { background: #fff9c4; border-radius: 8px; padding: 12px 12px 6px; margin-bottom: 20px; box-shadow: inset 0 -3px 0 rgba(255,213,79,.5); }
+  .filterBox .fRow { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+  .filterBox .fRow label { flex: 0 0 40px; margin: 0; font-size: 11px; color: #8a7a4a; }
+  .filterBox select, .filterBox input[type="date"] {
+    flex: 1; min-width: 0; width: auto; padding: 5px 6px; border: 1px solid #ffe082;
+    border-radius: 6px; font-size: 11px; background: #fffef7; color: #4a3b12;
+  }
+  .filterBox .fRange { display: flex; align-items: center; gap: 4px; flex: 1; }
+  .filterBox .fRange span { color: #b5a76a; font-size: 11px; }
+  .filterBox .fReset { padding: 5px 10px; font-size: 11px; box-shadow: 2px 2px 0 rgba(255,224,130,.7); }
+  .fSummary { font-size: 11px; color: #8a6d1f; margin: 4px 0 8px; }
+  .fItem {
+    display: flex; align-items: center; gap: 6px;
+    background: #fffef7; border-radius: 6px; padding: 7px 8px; margin-bottom: 7px;
+    box-shadow: 1px 2px 0 rgba(230,200,110,.35); font-size: 11px;
+  }
+  .fItem .fMain { flex: 1; min-width: 0; }
+  .fItem .fName {
+    color: #4a3b12; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-bottom: 3px; font-weight: 600;
+  }
+  .fItem .fMeta { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 6px; color: #8a7a4a; }
+  .fDir { padding: 1px 6px; border-radius: 10px; font-size: 10px; }
+  .fDir.e2c { background: #fff0b3; color: #795500; }
+  .fDir.c2e { background: #ffe0b2; color: #e65100; }
+  .fTagChip { padding: 1px 6px; border-radius: 10px; font-size: 10px; background: #f1f8e9; color: #558b2f; }
+  .fEmpty { color: #b5a76a; text-align: center; padding: 14px 0; font-size: 11px; }
+
+  /* 窄屏：两栏改为上下堆叠 */
+  @media (max-width: 900px) {
+    .twoCol { grid-template-columns: 1fr; }
+    .colList { border-left: none; padding-left: 0; border-top: 2px dashed #ffe082; padding-top: 16px; }
+    .listScroll { max-height: 280px; }
+  }
+  @media (max-width: 720px) {
+    body.side-open { padding-right: 16px; }
+    body.side-open #sideToggle { right: 86vw; }
+    #sidebar { width: 86vw; }
+    .banner { flex-direction: column-reverse; text-align: center; padding: 20px; }
+    .banner-figure { flex: none; }
+    .banner-figure img { max-width: 150px; }
+    .banner-slogan { font-size: 24px; }
+  }
+</style>
+</head>
+<body class="side-open">
+
+<button id="sideToggle" title="收起 / 展开侧栏"><span>📋</span><span class="tLabel">面板</span></button>
+
+<aside id="sidebar">
+  <div class="sideTabs">
+    <button class="sideTab active" data-pane="plan">📅 目标 · 待办</button>
+    <button class="sideTab" data-pane="rec">🎙️ 录音管理</button>
+  </div>
+
+  <div class="tabPane active" id="panePlan">
+    <h3>💡 本周每日目标 <span class="hint" id="weekHint">—</span></h3>
+    <div class="weekBar">
+      <div class="top">本周实际录音</div>
+      <div class="big" id="weekDone">0h</div>
+      <div class="compare" id="weekCompare">—</div>
+
+      <div class="dayColHead">
+        <span>日期</span><span></span><span>目标</span><span>实际</span>
+      </div>
+      <div class="dayList" id="dayList"></div>
+    </div>
+
+    <h3>💡 我的待办 <span class="hint" id="todoCount">0 项</span></h3>
+    <div class="todoInput">
+      <input type="text" id="todoText" placeholder="添加一条任务…" maxlength="60">
+      <button id="todoAdd">添加</button>
+    </div>
+    <ul id="todoList"></ul>
+  </div>
+
+  <div class="tabPane" id="paneRec">
+    <h3>🎙️ 录音条目管理 <span class="hint" id="filterCount">—</span></h3>
+    <div class="filterBox">
+      <div class="fRow">
+        <label>语言类型</label>
+        <select id="fDir">
+          <option value="">全部</option>
+          <option value="e2c">英译中</option>
+          <option value="c2e">中译英</option>
+        </select>
+      </div>
+      <div class="fRow">
+        <label>标签</label>
+        <select id="fTag"><option value="">全部</option></select>
+      </div>
+      <div class="fRow">
+        <label>日期</label>
+        <select id="fDateRange">
+          <option value="all">全部时间</option>
+          <option value="custom">自定义范围</option>
+        </select>
+      </div>
+      <div class="fRow" id="fCustomDates" style="display:none">
+        <label></label>
+        <div class="fRange">
+          <input type="date" id="fFrom"><span>~</span><input type="date" id="fTo">
+        </div>
+      </div>
+      <div class="fRow" style="justify-content:flex-end">
+        <button class="ghost fReset" id="fReset">重置筛选</button>
+      </div>
+    </div>
+    <div class="fSummary" id="fSummary">—</div>
+    <div id="filterList"></div>
+  </div>
+</aside>
+
+<div class="wrap">
+  <div class="banner">
+    <div class="banner-content">
+      <h1>🎧 口译练习打卡</h1>
+      <div class="banner-slogan" id="bannerSlogan"></div>
+      <div class="sub">上传录音 · 自动统计 · 日历热力图 · 侧栏管任务</div>
+    </div>
+    <div class="banner-figure">
+      <img src="banner-cutout.png" alt="口译练习督促员：戴耳机、举手指引的卡通老师">
+    </div>
+  </div>
+
+  <div class="note">
+    <h2>① 目标设置</h2>
+    <div class="grid">
+      <div><label>录音总目标（小时）</label><input type="number" id="goalHours" min="1" step="1" value="100"></div>
+      <div><label>开始日期</label><input type="date" id="startDate"></div>
+      <div><label>结束日期</label><input type="date" id="endDate"></div>
+    </div>
+  </div>
+
+  <div class="note">
+    <h2>② 进度概览</h2>
+    <div class="stats">
+      <div class="stat"><div class="num" id="sDone">0h</div><div class="lbl">已录音时长</div></div>
+      <div class="stat"><div class="num" id="sLeft">0h</div><div class="lbl">剩余时长</div></div>
+      <div class="stat"><div class="num" id="sWeek">0</div><div class="lbl">剩余周数</div></div>
+      <div class="stat"><div class="num" id="sPerWeek">0</div><div class="lbl">每周需录（小时）</div></div>
+    </div>
+    <div class="bar-bg"><div class="bar-fill" id="bar"></div></div>
+    <div class="sub" style="margin:12px 0 0" id="paceTip">—</div>
+  </div>
+
+  <div class="note">
+    <h2>③ 上传录音</h2>
+    <div id="drop">点击选择录音文件，或拖拽到此处<br>
+      <span style="font-size:12px">录音日期默认取今天，上传后可在右侧列表中修改</span>
+    </div>
+    <input type="file" id="fileInput" accept="audio/*" multiple hidden>
+    <input type="file" id="reviewFile" accept=".docx" hidden>
+    <div class="sub" style="margin:10px 0 0;font-size:12px">半自动复盘：可在每条录音上关联 WorkBuddy 生成的 .docx 复盘文档并点击预览</div>
+  </div>
+
+  <div class="note">
+    <h2>④ 打卡热力图 &amp; 录音记录</h2>
+    <div class="twoCol">
+      <!-- 左：日历热力图 -->
+      <div class="colHeat">
+        <div class="heatHead">
+          <div class="monthNav">
+            <button id="mPrev" title="上个月">‹</button>
+            <span class="mLabel" id="mLabel">—</span>
+            <button id="mNext" title="下个月">›</button>
+          </div>
+        </div>
+        <div class="calWrap">
+          <div class="calWeekHead">
+            <span>一</span><span>二</span><span>三</span><span>四</span>
+            <span>五</span><span class="we">六</span><span class="we">日</span>
+          </div>
+          <div class="calGrid" id="calGrid"></div>
+        </div>
+        <div class="legend" style="margin-top:12px">
+          少 <i style="background:#fdf8e3"></i><i style="background:#fff0b3"></i><i style="background:#ffe066"></i><i style="background:#ffc107"></i><i style="background:#f57f17"></i> 多
+        </div>
+      </div>
+
+      <!-- 右：录音记录（内部滚动） -->
+      <div class="colList">
+        <div class="colTitle">录音记录 <span class="hint" id="recCount" style="font-size:11px;color:#b5a76a;font-weight:400">—</span></div>
+        <div class="listScroll" id="listScroll"></div>
+        <div class="actions"><button class="ghost" id="clearBtn">清空全部记录</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <h2>⑤ 每周任务计划</h2>
+    <table>
+      <thead><tr><th>周次</th><th>日期区间</th><th>本周目标</th><th>状态</th></tr></thead>
+      <tbody id="planBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div id="reviewModal">
+  <div class="modalCard">
+    <div class="modalHead">
+      <h3 id="reviewTitle">复盘文档预览</h3>
+      <div class="modalTools">
+        <button class="zoomBtn" id="zoomBtn" title="放大 / 还原">⤢ 放大</button>
+        <span class="modalClose" id="reviewClose" title="关闭">✕</span>
+      </div>
+    </div>
+    <div class="modalBody" id="reviewBody"></div>
+  </div>
+</div>
+
+<script src="mammoth.browser.min.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2, '0');
+const key = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const fmtH = h => (Math.round(h * 100) / 100) + 'h';
+const fmtHM = h => {
+  const t = Math.round(h * 3600);
+  return `${Math.floor(t/3600)}h${pad(Math.floor(t%3600/60))}m`;
+};
+const fmtClock = h => {
+  const t = Math.max(0, Math.round(h * 3600));
+  return `${pad(Math.floor(t/3600))}:${pad(Math.floor(t%3600/60))}:${pad(t%60)}`;
+};
+const todayKey = () => key(new Date());
+
+const DIRECTIONS = { e2c: '英译中', c2e: '中译英' };
+let records = [];   // { name, dateKey, duration(小时), direction, tag, review: { name, dataUrl }|null }
+let todos = [];     // { text, done }
+let calCursor = new Date();
+let reviewTarget = null;  // 当前要关联复盘文档的录音索引
+
+(function initDates() {
+  const t = new Date(), e = new Date(t);
+  e.setMonth(e.getMonth() + 3);
+  $('startDate').value = key(t);
+  $('endDate').value = key(e);
+})();
+
+function getConfig() {
+  const s = new Date($('startDate').value + 'T00:00:00');
+  const e = new Date($('endDate').value + 'T00:00:00');
+  return { goal: Math.max(0.01, parseFloat($('goalHours').value) || 100), start: s, end: e };
+}
+function dailyTotals() {
+  const map = {};
+  records.forEach(r => { map[r.dateKey] = (map[r.dateKey] || 0) + r.duration; });
+  return map;
+}
+const totalDone = () => records.reduce((s, r) => s + r.duration, 0);
+
+function buildWeeks(start, end) {
+  if (isNaN(start) || isNaN(end) || end <= start) return [];
+  const weeks = []; let cur = new Date(start), idx = 1;
+  while (cur < end && idx <= 500) {
+    const w = new Date(cur); w.setDate(w.getDate() + 7);
+    const fe = w > end ? end : w;
+    weeks.push({ idx: idx++, start: new Date(cur), end: fe });
+    cur = fe;
+  }
+  return weeks;
+}
+function weekStart(d) {
+  const x = new Date(d); x.setHours(0,0,0,0);
+  x.setDate(x.getDate() - ((x.getDay() + 6) % 7));
+  return x;
+}
+function dailyGoalValue() {
+  const { goal, end } = getConfig();
+  const left = Math.max(0, goal - totalDone());
+  const today = new Date(); today.setHours(0,0,0,0);
+  if (isNaN(end) || end <= today) return left;
+  const daysLeft = Math.ceil((end - today) / 864e5);
+  return daysLeft > 0 ? left / daysLeft : left;
+}
+
+/* ===== Banner 标语：按录音进度切换 ===== */
+function renderSlogan(done, goal) {
+  let html;
+  if (done === 0) {
+    html = `录音册还是白纸一张？<br>
+      <span class="em">今天第一句</span>，什么时候开录？`;
+  } else if (done < 1) {
+    html = `已经录了 ${fmtH(done)}，开局漂亮！<br>
+      再加把劲，<span class="em">凑满 1 小时</span>！`;
+  } else {
+    html = `今日已录 ${fmtH(done)}，状态在线！<br>
+      稳住节奏，向 <span class="em">${fmtH(goal)}</span> 冲刺！`;
+  }
+  $('bannerSlogan').innerHTML = html;
+}
+
+/* ===== 主区渲染 ===== */
+function render() {
+  const { goal, start, end } = getConfig();
+  const done = totalDone(), left = Math.max(0, goal - done);
+
+  renderSlogan(done, goal);
+  $('sDone').textContent = fmtH(done);
+  $('sLeft').textContent = fmtH(left);
+  $('bar').style.width = Math.min(100, done / goal * 100) + '%';
+
+  const now = new Date();
+  let remainWeeks = 0, perWeek = 0;
+  if (!isNaN(start) && !isNaN(end) && end > start) {
+    const totalW = Math.max(1, Math.ceil((end - start) / 6048e5));
+    const passedW = Math.min(totalW, Math.max(0, Math.ceil((now - start) / 6048e5)));
+    remainWeeks = Math.max(0, totalW - passedW);
+    perWeek = remainWeeks > 0 ? left / remainWeeks : left;
+  }
+  $('sWeek').textContent = remainWeeks;
+  $('sPerWeek').textContent = fmtH(perWeek);
+
+  const tip = $('paceTip');
+  if (done >= goal) { tip.textContent = '🎉 已达成全部目标！'; tip.style.color = '#f57f17'; }
+  else if (remainWeeks === 0) { tip.textContent = '⚠️ 周期已结束仍未达标，建议调整结束日期。'; tip.style.color = '#e65100'; }
+  else { tip.textContent = `还需在剩余 ${remainWeeks} 周内平均每周录音 ${fmtH(perWeek)}。`; tip.style.color = '#8a7a4a'; }
+
+  renderCalendar(); renderList(); renderPlan(start, end, goal, done); renderSide(); renderFilter();
+}
+
+/* ===== 日历式热力图 ===== */
+function renderCalendar() {
+  const y = calCursor.getFullYear(), m = calCursor.getMonth();
+  $('mLabel').textContent = `${y} 年 ${m + 1} 月`;
+
+  const totals = dailyTotals();
+  const max = Math.max(0.25, ...Object.values(totals));
+  const tKey = todayKey();
+
+  const first = new Date(y, m, 1);
+  const offset = (first.getDay() + 6) % 7;
+  const daysInMonth = new Date(y, m + 1, 0).getDate();
+  const cells = [];
+  for (let i = 0; i < offset; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(y, m, d));
+
+  const grid = $('calGrid'); grid.innerHTML = '';
+  cells.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'calCell';
+    if (!d) { el.classList.add('blank'); grid.appendChild(el); return; }
+    const k = key(d), v = totals[k] || 0;
+    if (v > 0) {
+      const r = v / max;
+      el.classList.add(r > .8 ? 'lv4' : r > .55 ? 'lv3' : r > .3 ? 'lv2' : 'lv1');
+    }
+    if (k === tKey) el.classList.add('today');
+    el.title = `${k}  录音 ${fmtHM(v)}`;
+    grid.appendChild(el);
+  });
+}
+
+/* ===== 录音记录（右侧滚动列表）===== */
+function renderList() {
+  const box = $('listScroll');
+  $('recCount').textContent = records.length ? `${records.length} 条` : '';
+  if (!records.length) {
+    box.innerHTML = '<div class="emptyTip">暂无录音<br>点击上方区域上传</div>';
+    return;
+  }
+  box.innerHTML = records.map((r, i) => `
+    <div class="recItem">
+      <div class="recInfo">
+        <div class="recName" title="${escapeHtml(r.name)}">${escapeHtml(r.name)}</div>
+        <div class="recMeta">
+          <input type="date" value="${r.dateKey}" data-di="${i}">
+          <span class="recDur" title="时:分:秒">${fmtClock(r.duration)}</span>
+          <select data-dir-i="${i}" title="翻译方向">
+            <option value="e2c"${(r.direction || 'e2c') === 'e2c' ? ' selected' : ''}>英译中</option>
+            <option value="c2e"${r.direction === 'c2e' ? ' selected' : ''}>中译英</option>
+          </select>
+          <input type="text" class="recTag" data-tag-i="${i}" value="${escapeHtml(r.tag || '')}" placeholder="表现标签" maxlength="20" title="自定义表现标签">
+        </div>
+        <div class="recActions">
+          <button class="revBtn" data-ru-i="${i}" title="关联 docx 复盘文档">📄 ${r.review ? '更换复盘' : '上传复盘'}</button>
+          ${r.review ? `
+            <button class="revBtn view" data-rv-i="${i}" title="预览复盘文档">👁 预览</button>
+            <span class="revName" title="${escapeHtml(r.review.name)}">${escapeHtml(r.review.name)}</span>
+            <span class="recDel" data-rd-i="${i}" title="移除复盘文档">✕</span>` : ''}
+        </div>
+      </div>
+      <span class="recDel" data-i="${i}" title="删除录音">✕</span>
+    </div>`).join('');
+
+  box.querySelectorAll('.recDel[data-i]').forEach(el => el.onclick = () => { records.splice(+el.dataset.i, 1); saveRecords(); render(); });
+  box.querySelectorAll('input[data-di]').forEach(el => el.onchange = () => { records[+el.dataset.di].dateKey = el.value; saveRecords(); render(); });
+  box.querySelectorAll('select[data-dir-i]').forEach(el => el.onchange = () => { records[+el.dataset.dirI].direction = el.value; saveRecords(); render(); });
+  box.querySelectorAll('input[data-tag-i]').forEach(el => el.onchange = () => { records[+el.dataset.tagI].tag = el.value.trim(); saveRecords(); render(); });
+  box.querySelectorAll('[data-ru-i]').forEach(el => el.onclick = () => { reviewTarget = +el.dataset.ruI; $('reviewFile').click(); });
+  box.querySelectorAll('[data-rv-i]').forEach(el => el.onclick = () => previewReview(+el.dataset.rvI));
+  box.querySelectorAll('[data-rd-i]').forEach(el => el.onclick = () => { records[+el.dataset.rdI].review = null; saveRecords(); render(); });
+}
+
+/* ===== 每周计划表 ===== */
+function renderPlan(start, end, goal, done) {
+  const weeks = buildWeeks(start, end), body = $('planBody');
+  if (!weeks.length) {
+    body.innerHTML = '<tr><td colspan="4" style="color:#b5a76a;text-align:center;padding:20px">请检查起止日期</td></tr>';
+    return;
+  }
+  const now = new Date(), perWeekGoal = goal / weeks.length;
+  const rng = w => `${w.start.getMonth()+1}/${w.start.getDate()} - ${w.end.getMonth()+1}/${w.end.getDate()}`;
+  body.innerHTML = weeks.map(w => {
+    let status, badge;
+    if (now >= w.end) {
+      const expected = goal * ((w.end - start) / (end - start));
+      const ok = done >= expected;
+      status = ok ? '已达成' : '未达成'; badge = ok ? 'done' : 'todo';
+    } else if (now >= w.start) { status = '进行中'; badge = 'doing'; }
+    else { status = '未开始'; badge = 'todo'; }
+    return `<tr><td>第 ${w.idx} 周</td><td class="date">${rng(w)}</td>
+      <td>${fmtH(perWeekGoal)}</td><td><span class="badge ${badge}">${status}</span></td></tr>`;
+  }).join('');
+}
+
+/* ===== 侧栏：本周每日目标 ===== */
+function renderSide() {
+  const totals = dailyTotals();
+  const ws = weekStart(new Date());
+  const names = ['周一','周二','周三','周四','周五','周六','周日'];
+  const tKey = todayKey();
+  const cfg = getConfig();
+  const dayGoal = dailyGoalValue();
+  const planS = new Date(cfg.start); planS.setHours(0,0,0,0);
+  const planE = new Date(cfg.end); planE.setHours(0,0,0,0);
+
+  let weekDone = 0, weekGoalShould = 0;
+  const days = names.map((nm, i) => {
+    const d = new Date(ws); d.setDate(d.getDate() + i);
+    const k = key(d);
+    const v = totals[k] || 0;
+    weekDone += v;
+    const inPlan = !isNaN(cfg.start) && d >= planS && d <= planE;
+    if (inPlan) weekGoalShould += dayGoal;
+    return { nm, k, v, isToday: k === tKey, inPlan };
+  });
+
+  $('weekDone').textContent = fmtHM(weekDone);
+  const diff = weekDone - weekGoalShould;
+  $('weekCompare').innerHTML = `本周目标 ${fmtH(weekGoalShould)} ·
+    <span style="color:${diff >= 0 ? '#f57f17' : '#e65100'}">
+    ${diff >= 0 ? '超出 ' : '还差 '}${fmtH(Math.abs(diff))}</span>`;
+
+  const maxV = Math.max(dayGoal, ...days.map(d => d.v), 0.01);
+  $('dayList').innerHTML = days.map(d => {
+    const pct = Math.min(100, d.v / maxV * 100);
+    const over = d.v > dayGoal;
+    const goalText = d.inPlan ? fmtH(dayGoal) : '—';
+    const actText = d.v > 0 ? fmtHM(d.v) : '—';
+    return `<div class="dayRow ${d.isToday ? 'isToday' : ''}">
+      <span class="nm">${d.nm}</span>
+      <span class="track"><span class="fill ${over ? 'over' : ''}" style="width:${pct}%"></span></span>
+      <span class="goal">${goalText}</span>
+      <span class="act ${d.v > 0 ? '' : 'zero'}">${actText}</span>
+    </div>`;
+  }).join('');
+
+  $('weekHint').textContent = `每日目标 ${fmtH(dayGoal)}`;
+  renderTodos();
+}
+
+/* ===== 侧栏：录音条目管理（筛选） ===== */
+function renderFilter() {
+  const dir = $('fDir').value;
+  const useCustom = $('fDateRange').value === 'custom';
+  const from = useCustom ? $('fFrom').value : '';
+  const to = useCustom ? $('fTo').value : '';
+
+  // 标签选项随录音数据动态更新，保留当前选中项
+  const prevTag = $('fTag').value;
+  const tags = [...new Set(records.map(r => (r.tag || '').trim()).filter(Boolean))].sort();
+  $('fTag').innerHTML = '<option value="">全部</option>' +
+    tags.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
+  $('fTag').value = tags.includes(prevTag) ? prevTag : '';
+  const activeTag = $('fTag').value;
+
+  const list = records.filter(r => {
+    if (dir && (r.direction || 'e2c') !== dir) return false;
+    if (activeTag && (r.tag || '').trim() !== activeTag) return false;
+    if (from && r.dateKey < from) return false;
+    if (to && r.dateKey > to) return false;
+    return true;
+  });
+
+  $('filterCount').textContent = `${list.length} / ${records.length} 条`;
+  const seconds = list.reduce((s, r) => s + r.duration * 3600, 0);
+  $('fSummary').textContent = list.length
+    ? `共 ${list.length} 条 · 总时长 ${fmtClock(seconds / 3600)}`
+    : '没有符合条件的录音';
+  $('fSummary').style.color = list.length ? '#8a6d1f' : '#b5a76a';
+
+  const box = $('filterList');
+  if (!list.length) {
+    box.innerHTML = '<div class="fEmpty">暂无匹配记录</div>';
+    return;
+  }
+  box.innerHTML = list.map(r => {
+    const i = records.indexOf(r);
+    const d = r.direction || 'e2c';
+    return `<div class="fItem">
+      <div class="fMain">
+        <div class="fName" title="${escapeHtml(r.name)}">${escapeHtml(r.name)}</div>
+        <div class="fMeta">
+          <span class="fDir ${d}">${DIRECTIONS[d]}</span>
+          <span class="recDur">${fmtClock(r.duration)}</span>
+          ${r.tag ? `<span class="fTagChip">${escapeHtml(r.tag)}</span>` : ''}
+          ${r.review ? `<span class="fReview" data-frv="${i}" title="预览复盘文档">📄 复盘</span>` : ''}
+          <span>${r.dateKey}</span>
+        </div>
+      </div>
+      <span class="recDel" data-fi="${i}" title="删除">✕</span>
+    </div>`;
+  }).join('');
+  box.querySelectorAll('[data-fi]').forEach(el => el.onclick = () => { records.splice(+el.dataset.fi, 1); saveRecords(); render(); });
+  box.querySelectorAll('[data-frv]').forEach(el => el.onclick = () => previewReview(+el.dataset.frv));
+}
+
+/* ===== 待办 ===== */
+function renderTodos() {
+  $('todoCount').textContent = `${todos.filter(t => !t.done).length} 项待完成`;
+  const ul = $('todoList');
+  if (!todos.length) {
+    ul.innerHTML = '<li style="color:#b5a76a;background:transparent;box-shadow:none;font-size:12px">还没有任务，在上方输入框添加吧</li>';
+    return;
+  }
+  ul.innerHTML = todos.map((t, i) => `
+    <li class="${t.done ? 'checked' : ''}">
+      <input type="checkbox" data-ti="${i}" ${t.done ? 'checked' : ''}>
+      <span class="txt">${escapeHtml(t.text)}</span>
+      <span class="rm" data-ri="${i}" title="删除">✕</span>
+    </li>`).join('');
+  ul.querySelectorAll('input[data-ti]').forEach(el => el.onchange = () => { todos[+el.dataset.ti].done = el.checked; saveTodos(); renderTodos(); });
+  ul.querySelectorAll('.rm').forEach(el => el.onclick = () => { todos.splice(+el.dataset.ri, 1); saveTodos(); renderTodos(); });
+}
+function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function saveTodos() { try { localStorage.setItem('interp_todos', JSON.stringify(todos)); } catch(e){} }
+function loadTodos() { try { const s = localStorage.getItem('interp_todos'); if (s) todos = JSON.parse(s); } catch(e){ todos = []; } }
+
+/* ===== 录音记录持久化（含复盘文档） ===== */
+function saveRecords() {
+  try { localStorage.setItem('interp_records', JSON.stringify(records)); }
+  catch(e) { alert('本地存储空间不足，复盘文档可能未保存。建议删除部分旧记录后重试。'); }
+}
+function loadRecords() {
+  try {
+    const s = localStorage.getItem('interp_records');
+    if (s) records = JSON.parse(s).map(r => ({ ...r, review: r.review || null }));
+  } catch(e) { records = []; }
+}
+
+/* ===== 复盘文档：上传关联与预览 ===== */
+function dataUrlToArrayBuffer(dataUrl) {
+  const b64 = dataUrl.slice(dataUrl.indexOf(',') + 1);
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return bytes.buffer;
+}
+function handleReviewFile(file, idx) {
+  if (!/\.docx$/i.test(file.name)) { alert('请选择 .docx 格式的复盘文档'); return; }
+  const reader = new FileReader();
+  reader.onload = () => {
+    records[idx].review = { name: file.name, dataUrl: reader.result };
+    saveRecords(); render();
+  };
+  reader.readAsDataURL(file);
+}
+async function previewReview(idx) {
+  const r = records[idx];
+  if (!r || !r.review) return;
+  $('reviewTitle').textContent = '复盘预览 · ' + r.review.name + '（' + r.name + '）';
+  $('reviewBody').innerHTML = '<div class="fEmpty">正在解析文档…</div>';
+  $('reviewModal').classList.add('show');
+  try {
+    const out = await mammoth.convertToHtml({ arrayBuffer: dataUrlToArrayBuffer(r.review.dataUrl) });
+    $('reviewBody').innerHTML = out.value || '<div class="fEmpty">文档内容为空</div>';
+  } catch(e) {
+    $('reviewBody').innerHTML = '<div class="fEmpty">文档解析失败：' + escapeHtml(e.message || e) + '</div>';
+  }
+}
+
+function addTodo() {
+  const el = $('todoText');
+  const v = el.value.trim();
+  if (!v) return;
+  todos.push({ text: v, done: false });
+  el.value = '';
+  saveTodos(); renderTodos();
+}
+
+/* ===== 音频时长 ===== */
+function readDuration(file) {
+  return new Promise(resolve => {
+    const url = URL.createObjectURL(file);
+    const a = document.createElement('audio');
+    a.preload = 'metadata';
+    a.onloadedmetadata = () => { URL.revokeObjectURL(url); resolve(isFinite(a.duration) ? a.duration : 0); };
+    a.onerror = () => { URL.revokeObjectURL(url); resolve(0); };
+    a.src = url;
+  });
+}
+async function handleFiles(files) {
+  for (const f of files) {
+    if (!f.type.startsWith('audio/') && !/\.(mp3|wav|m4a|aac|ogg|flac|webm)$/i.test(f.name)) continue;
+    const sec = await readDuration(f);
+    records.push({ name: f.name, dateKey: todayKey(), duration: sec / 3600, direction: 'e2c', tag: '', review: null });
+  }
+  saveRecords(); render();
+}
+
+/* ===== 事件 ===== */
+$('goalHours').oninput = render;
+$('startDate').onchange = render;
+$('endDate').onchange = render;
+
+const drop = $('drop'), input = $('fileInput');
+drop.onclick = () => input.click();
+input.onchange = e => { handleFiles([...e.target.files]); input.value = ''; };
+drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('over'); });
+drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('over'); handleFiles([...e.dataTransfer.files]); });
+$('clearBtn').onclick = () => { if (confirm('确定清空所有录音记录（含复盘文档）？')) { records = []; saveRecords(); render(); } };
+
+$('reviewFile').onchange = e => {
+  const f = e.target.files[0];
+  e.target.value = '';
+  if (f && reviewTarget !== null) handleReviewFile(f, reviewTarget);
+  reviewTarget = null;
+};
+function closeReviewModal() {
+  $('reviewModal').classList.remove('show');
+  document.querySelector('.modalCard').classList.remove('zoomed');
+  $('zoomBtn').textContent = '⤢ 放大';
+}
+$('zoomBtn').onclick = () => {
+  const z = document.querySelector('.modalCard').classList.toggle('zoomed');
+  $('zoomBtn').textContent = z ? '⤡ 还原' : '⤢ 放大';
+};
+$('reviewClose').onclick = closeReviewModal;
+$('reviewModal').onclick = e => { if (e.target === $('reviewModal')) closeReviewModal(); };
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeReviewModal(); });
+
+$('sideToggle').onclick = () => document.body.classList.toggle('side-open');
+
+document.querySelectorAll('.sideTab').forEach(tab => tab.onclick = () => {
+  document.querySelectorAll('.sideTab').forEach(t => t.classList.toggle('active', t === tab));
+  $('panePlan').classList.toggle('active', tab.dataset.pane === 'plan');
+  $('paneRec').classList.toggle('active', tab.dataset.pane === 'rec');
+});
+
+$('fDir').onchange = renderFilter;
+$('fTag').onchange = renderFilter;
+$('fDateRange').onchange = () => {
+  $('fCustomDates').style.display = $('fDateRange').value === 'custom' ? 'flex' : 'none';
+  renderFilter();
+};
+$('fFrom').onchange = renderFilter;
+$('fTo').onchange = renderFilter;
+$('fReset').onclick = () => {
+  $('fDir').value = ''; $('fTag').value = '';
+  $('fDateRange').value = 'all'; $('fCustomDates').style.display = 'none';
+  $('fFrom').value = ''; $('fTo').value = '';
+  renderFilter();
+};
+
+$('mPrev').onclick = () => { calCursor.setMonth(calCursor.getMonth() - 1); renderCalendar(); };
+$('mNext').onclick = () => { calCursor.setMonth(calCursor.getMonth() + 1); renderCalendar(); };
+
+$('todoAdd').onclick = addTodo;
+$('todoText').addEventListener('keydown', e => { if (e.key === 'Enter') addTodo(); });
+
+loadTodos();
+loadRecords();
+render();
+</script>
+</body>
+</html>
