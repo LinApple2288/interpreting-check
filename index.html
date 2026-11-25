@@ -153,6 +153,30 @@
   }
   .recMeta input.recTag { width: 84px; }
   .recMeta select { cursor: pointer; }
+
+  /* 标签 chip（彩虹色按序轮换） */
+  .tagChip {
+    display: inline-flex; align-items: center; gap: 2px;
+    padding: 1px 6px; border-radius: 10px; font-size: 11px; line-height: 1.5;
+    white-space: nowrap;
+  }
+  .tagChip.r0 { background: #ffebee; color: #c62828; }
+  .tagChip.r1 { background: #fff3e0; color: #e65100; }
+  .tagChip.r2 { background: #fffde7; color: #f9a825; }
+  .tagChip.r3 { background: #e8f5e9; color: #2e7d32; }
+  .tagChip.r4 { background: #e0f7fa; color: #00838f; }
+  .tagChip.r5 { background: #e8eaf6; color: #3949ab; }
+  .tagChip.r6 { background: #f3e5f5; color: #7b1fa2; }
+  .tagChip .tagX { cursor: pointer; opacity: .65; font-size: 11px; margin-left: 1px; }
+  .tagChip .tagX:hover { opacity: 1; }
+  .tagInput { width: 68px; padding: 2px 5px; font-size: 11px; border: 1px solid #ffe082; border-radius: 10px; background: #fffef7; color: #8a7a4a; }
+  .tagAdd {
+    width: 18px; height: 18px; padding: 0; line-height: 16px; text-align: center;
+    border-radius: 50%; border: 1px dashed #f9a825; background: #fffde7;
+    color: #f57f17; font-size: 13px; cursor: pointer; flex-shrink: 0;
+  }
+  .tagAdd:hover { background: #fff3c4; }
+  .tagsLine { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
   .recDur { font-size: 12px; font-weight: 700; color: #f57f17; white-space: nowrap; font-variant-numeric: tabular-nums; }
   .recDel { color: #e65100; cursor: pointer; font-size: 14px; opacity: .7; flex-shrink: 0; }
   .recDel:hover { opacity: 1; }
@@ -355,7 +379,6 @@
   .fDir { padding: 1px 6px; border-radius: 10px; font-size: 10px; }
   .fDir.e2c { background: #fff0b3; color: #795500; }
   .fDir.c2e { background: #ffe0b2; color: #e65100; }
-  .fTagChip { padding: 1px 6px; border-radius: 10px; font-size: 10px; background: #f1f8e9; color: #558b2f; }
   .fEmpty { color: #b5a76a; text-align: center; padding: 14px 0; font-size: 11px; }
 
   /* 窄屏：两栏改为上下堆叠 */
@@ -558,7 +581,8 @@ const fmtClock = h => {
 const todayKey = () => key(new Date());
 
 const DIRECTIONS = { e2c: '英译中', c2e: '中译英' };
-let records = [];   // { name, dateKey, duration(小时), direction, tag, review: { name, dataUrl }|null }
+let records = [];   // { name, dateKey, duration(小时), direction, tags: string[], review: { name, dataUrl }|null }
+const tagList = r => Array.isArray(r.tags) ? r.tags : (r.tag ? [r.tag] : []);  // 兼容旧版单标签数据
 let todos = [];     // { text, done }
 let calCursor = new Date();
 let reviewTarget = null;  // 当前要关联复盘文档的录音索引
@@ -703,7 +727,12 @@ function renderList() {
             <option value="e2c"${(r.direction || 'e2c') === 'e2c' ? ' selected' : ''}>英译中</option>
             <option value="c2e"${r.direction === 'c2e' ? ' selected' : ''}>中译英</option>
           </select>
-          <input type="text" class="recTag" data-tag-i="${i}" value="${escapeHtml(r.tag || '')}" placeholder="标签" maxlength="20" title="自定义标签">
+        </div>
+        <div class="tagsLine">
+          ${tagList(r).map((t, ti) => `<span class="tagChip r${ti % 7}">#${escapeHtml(t)}<span class="tagX" data-tx-i="${i}" data-ti="${ti}" title="移除标签">✕</span></span>`).join('')}
+          ${tagList(r).length
+            ? `<button class="tagAdd" data-ta-add="${i}" title="添加标签">＋</button>`
+            : `<input type="text" class="tagInput" data-ta-i="${i}" placeholder="＋标签" maxlength="20" title="输入标签后按回车添加">`}
         </div>
         <div class="recActions">
           <button class="revBtn" data-ru-i="${i}" title="关联 docx 复盘文档">📄 ${r.review ? '更换复盘' : '上传复盘'}</button>
@@ -719,7 +748,42 @@ function renderList() {
   box.querySelectorAll('.recDel[data-i]').forEach(el => el.onclick = () => { records.splice(+el.dataset.i, 1); saveRecords(); render(); });
   box.querySelectorAll('input[data-di]').forEach(el => el.onchange = () => { records[+el.dataset.di].dateKey = el.value; saveRecords(); render(); });
   box.querySelectorAll('select[data-dir-i]').forEach(el => el.onchange = () => { records[+el.dataset.dirI].direction = el.value; saveRecords(); render(); });
-  box.querySelectorAll('input[data-tag-i]').forEach(el => el.onchange = () => { records[+el.dataset.tagI].tag = el.value.trim(); saveRecords(); render(); });
+  box.querySelectorAll('[data-tx-i]').forEach(el => el.onclick = () => {
+    const rec = records[+el.dataset.txI];
+    if (!Array.isArray(rec.tags)) rec.tags = tagList(rec);
+    rec.tags.splice(+el.dataset.ti, 1);
+    saveRecords(); render();
+  });
+  const bindTagInput = (el, i) => {
+    el.onkeydown = e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const v = el.value.trim();
+        if (!v) return;
+        const rec = records[i];
+        if (!Array.isArray(rec.tags)) rec.tags = tagList(rec);
+        if (!rec.tags.includes(v)) rec.tags.push(v);
+        saveRecords(); render();
+      } else if (e.key === 'Escape') {
+        render();
+      }
+    };
+    el.onblur = () => { if (!el.value.trim()) render(); };
+  };
+  box.querySelectorAll('input[data-ta-i]').forEach(el => bindTagInput(el, +el.dataset.taI));
+  box.querySelectorAll('[data-ta-add]').forEach(el => el.onclick = () => {
+    const i = +el.dataset.taAdd;
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'tagInput';
+    input.placeholder = '＋标签';
+    input.maxLength = 20;
+    input.title = '输入标签后按回车添加';
+    input.dataset.taI = i;
+    el.replaceWith(input);
+    bindTagInput(input, i);
+    input.focus();
+  });
   box.querySelectorAll('[data-ru-i]').forEach(el => el.onclick = () => { reviewTarget = +el.dataset.ruI; $('reviewFile').click(); });
   box.querySelectorAll('[data-rv-i]').forEach(el => el.onclick = () => previewReview(+el.dataset.rvI));
   box.querySelectorAll('[data-rd-i]').forEach(el => el.onclick = () => { records[+el.dataset.rdI].review = null; saveRecords(); render(); });
@@ -802,15 +866,15 @@ function renderFilter() {
 
   // 标签选项随录音数据动态更新，保留当前选中项
   const prevTag = $('fTag').value;
-  const tags = [...new Set(records.map(r => (r.tag || '').trim()).filter(Boolean))].sort();
+  const tags = [...new Set(records.flatMap(tagList).map(t => String(t).trim()).filter(Boolean))].sort();
   $('fTag').innerHTML = '<option value="">全部</option>' +
-    tags.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
+    tags.map(t => `<option value="${escapeHtml(t)}">#${escapeHtml(t)}</option>`).join('');
   $('fTag').value = tags.includes(prevTag) ? prevTag : '';
   const activeTag = $('fTag').value;
 
   const list = records.filter(r => {
     if (dir && (r.direction || 'e2c') !== dir) return false;
-    if (activeTag && (r.tag || '').trim() !== activeTag) return false;
+    if (activeTag && !tagList(r).includes(activeTag)) return false;
     if (from && r.dateKey < from) return false;
     if (to && r.dateKey > to) return false;
     return true;
@@ -837,7 +901,7 @@ function renderFilter() {
         <div class="fMeta">
           <span class="fDir ${d}">${DIRECTIONS[d]}</span>
           <span class="recDur">${fmtClock(r.duration)}</span>
-          ${r.tag ? `<span class="fTagChip">${escapeHtml(r.tag)}</span>` : ''}
+          ${tagList(r).map((t, ti) => `<span class="tagChip r${ti % 7}">#${escapeHtml(t)}</span>`).join('')}
           ${r.review ? `<span class="fReview" data-frv="${i}" title="预览复盘文档">📄 复盘</span>` : ''}
           <span>${r.dateKey}</span>
         </div>
@@ -878,7 +942,7 @@ function saveRecords() {
 function loadRecords() {
   try {
     const s = localStorage.getItem('interp_records');
-    if (s) records = JSON.parse(s).map(r => ({ ...r, review: r.review || null }));
+    if (s) records = JSON.parse(s).map(r => ({ ...r, tags: tagList(r), review: r.review || null }));
   } catch(e) { records = []; }
 }
 
@@ -937,7 +1001,7 @@ async function handleFiles(files) {
   for (const f of files) {
     if (!f.type.startsWith('audio/') && !/\.(mp3|wav|m4a|aac|ogg|flac|webm)$/i.test(f.name)) continue;
     const sec = await readDuration(f);
-    records.push({ name: f.name, dateKey: todayKey(), duration: sec / 3600, direction: 'e2c', tag: '', review: null });
+    records.push({ name: f.name, dateKey: todayKey(), duration: sec / 3600, direction: 'e2c', tags: [], review: null });
   }
   saveRecords(); render();
 }
